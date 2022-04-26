@@ -30,8 +30,6 @@ const getTotalItems = (items: CartItemType[]) => {
   return items.reduce((acc: number, item) => acc + item.amount, 0);
 };
 
-const handleAddToCart = (item: CartItemType) => null;
-
 const handleRemoveToCart = () => null;
 
 const App = () => {
@@ -45,6 +43,22 @@ const App = () => {
 
   console.log(data);
 
+  const handleAddToCart = (clickedItem: CartItemType) => {
+    setCartItems((prevState) => {
+      const isItemInCart = prevState.find((item) => item.id === clickedItem.id);
+
+      if (isItemInCart) {
+        return prevState.map((item) =>
+          item.id === clickedItem.id
+            ? { ...item, amount: item.amount + 1 }
+            : item
+        );
+      }
+
+      return [...prevState, {...clickedItem, amount: 1}]
+    });
+  };
+
   if (isLoading) return <LinearProgress />;
   if (error) return <div>Something went wrong</div>;
 
@@ -55,7 +69,11 @@ const App = () => {
         open={isCartOpen}
         onClose={() => setIsCartOpen(false)}
       >
-        <Cart cartItems={cartItems} addToCart={handleAddToCart} removeFromCart={handleRemoveToCart} />
+        <Cart
+          cartItems={cartItems}
+          addToCart={handleAddToCart}
+          removeFromCart={handleRemoveToCart}
+        />
       </Drawer>
       <StyledButton onClick={() => setIsCartOpen(true)}>
         <Badge badgeContent={getTotalItems(cartItems)} color="error">
