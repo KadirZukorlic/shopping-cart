@@ -30,8 +30,6 @@ const getTotalItems = (items: CartItemType[]) => {
   return items.reduce((acc: number, item) => acc + item.amount, 0);
 };
 
-const handleRemoveToCart = () => null;
-
 const App = () => {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [cartItems, setCartItems] = useState([] as CartItemType[]);
@@ -55,8 +53,23 @@ const App = () => {
         );
       }
 
-      return [...prevState, {...clickedItem, amount: 1}]
+      return [...prevState, { ...clickedItem, amount: 1 }];
     });
+  };
+
+  const handleRemoveToCart = (id: number) => {
+    setCartItems((prevState) =>
+      prevState.reduce((acc, item) => {
+        if (item.id === id) {
+          if (item.amount === 1) {
+            return acc;
+          }
+          return [...acc, { ...item, amount: item.amount - 1 }];
+        } else {
+          return [...acc, item];
+        }
+      }, [] as CartItemType[])
+    );
   };
 
   if (isLoading) return <LinearProgress />;
